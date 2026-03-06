@@ -1,0 +1,16 @@
+import { ChildGame } from "./ChildGame";
+
+export interface Child {
+    id?: string;
+    parentId: string;
+    name: string;
+    age: number;
+    avatar: string;
+    createdAt?: Date;
+    isBlocked: boolean;
+
+    totalPlayTime?: number;
+    totalGamesPlayed?: number;
+    lastPlayed?: Date;
+    games: ChildGame[];
+}

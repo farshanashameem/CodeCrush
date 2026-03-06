@@ -3,7 +3,10 @@ import { ITokenservice } from "../../application/interfaces/ITokenService";
 
 
 export interface AuthRequest extends Request {
-    parent?: any;
+    parent?: {
+        id: string;
+        email: string;
+    }
 }
 
 export const parentAuthMiddleware =(tokenService: ITokenservice) => {
@@ -28,7 +31,7 @@ export const parentAuthMiddleware =(tokenService: ITokenservice) => {
 
         next();
     } catch( error:any ) {
-        res.status(401).json({ message:"Invalid or expired token"});
+       return res.status(401).json({ message:"Invalid or expired token"});
     }
 };
 };

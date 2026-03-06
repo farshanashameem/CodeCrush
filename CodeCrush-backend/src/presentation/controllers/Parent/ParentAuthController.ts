@@ -1,7 +1,7 @@
 import { Request,Response } from "express";
-import { RegisterParentUseCase } from "../../application/use-cases/parent/RegisterParentUseCase";
-import { LoginParentUseCase } from "../../application/use-cases/parent/LoginParentUseCase";
-import { RefershTokenUseCase } from "../../application/use-cases/parent/RefreshTokenUseCase";
+import { RegisterParentUseCase } from "../../../application/use-cases/parent/RegisterParentUseCase";
+import { LoginParentUseCase } from "../../../application/use-cases/parent/LoginParentUseCase";
+import { RefershTokenUseCase } from "../../../application/use-cases/parent/RefreshTokenUseCase";
 
 export class ParentAuthController {
 

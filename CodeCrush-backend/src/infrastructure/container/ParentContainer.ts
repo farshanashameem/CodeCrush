@@ -1,11 +1,11 @@
-import { MongoParentRepository } from "./repositories/MongoParentRepository";
-import { BcryptHashService } from "./services/BcryptHashService";
-import { RegisterParentUseCase } from "../application/use-cases/parent/RegisterParentUseCase";
-import { ParentAuthController } from "../presentation/controllers/ParentAuthController";
-import { LoginParentUseCase } from "../application/use-cases/parent/LoginParentUseCase";
-import { JWTTokenService } from "./services/JWTTokenService";
-import { parentAuthMiddleware } from "../presentation/middlewares/authMiddleware";
-import { RefershTokenUseCase } from "../application/use-cases/parent/RefreshTokenUseCase";
+import { MongoParentRepository } from "../repositories/MongoParentRepository";
+import { BcryptHashService } from "../services/BcryptHashService";
+import { RegisterParentUseCase } from "../../application/use-cases/parent/RegisterParentUseCase";
+import { ParentAuthController } from "../../presentation/controllers/Parent/ParentAuthController";
+import { LoginParentUseCase } from "../../application/use-cases/parent/LoginParentUseCase";
+import { JWTTokenService } from "../services/JWTTokenService";
+import { parentAuthMiddleware } from "../../presentation/middlewares/authMiddleware";
+import { RefershTokenUseCase } from "../../application/use-cases/parent/RefreshTokenUseCase";
 
 //create Repository instance
 const parentRepository = new MongoParentRepository();

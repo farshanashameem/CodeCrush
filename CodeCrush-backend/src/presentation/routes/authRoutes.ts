@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { parentAuthController } from "../../infrastructure/container";
-import { authMiddleware } from "../../infrastructure/container";
+import { parentAuthController } from "../../infrastructure/container/ParentContainer";
+import { authMiddleware } from "../../infrastructure/container/ParentContainer";
 
 const router = Router();
 
