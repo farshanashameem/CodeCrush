@@ -45,12 +45,21 @@ const childSchema = new mongoose.Schema ({
         required: true
     },
 
+    dob: {
+        type: Date
+    },
+
     avatar: {
         type: String,
         required: true
     },
 
     isBlocked: {
+        type: Boolean,
+        default: false
+    },
+
+    isDeleted: {
         type: Boolean,
         default: false
     },

@@ -5,12 +5,14 @@ export interface Child {
     parentId: string;
     name: string;
     age: number;
+    dob?: Date;
     avatar: string;
     createdAt?: Date;
-    isBlocked: boolean;
+    isBlocked?: boolean;
+    isDeleted?: boolean;
 
     totalPlayTime?: number;
     totalGamesPlayed?: number;
     lastPlayed?: Date;
-    games: ChildGame[];
+    games?: ChildGame[];
 }

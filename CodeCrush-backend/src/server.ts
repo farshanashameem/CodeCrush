@@ -2,12 +2,15 @@ import express from "express" ;
 import dotenv from "dotenv";
 import { connectDB } from "./infrastructure/database/mongo.connection";
 import authRoutes from "./presentation/routes/authRoutes"
+import childRoutes from "./presentation/routes/childRoutes"
+
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/children", childRoutes);
 
 connectDB();
 

@@ -10,28 +10,53 @@ export class MongoChildRepository implements IChildRepository {
     }
 
     async getChildrenByParentId(parentId: string): Promise<Child[]> {
-        const children = await ChildModel.find( { parentId });
+        const children = await ChildModel.find( { parentId, isDeleted: false });
         return children.map( child => this.mapToDomain( child ));
     }
 
-    async getChildById(childId: string): Promise<Child | null> {
-        const child = await ChildModel.findById( childId );
+    async getChildById(parentId: string, childId: string): Promise<Child | null> {
+        const child = await ChildModel.findOne({
+            _id: childId,
+            parentId,
+            isDeleted: false
+        });
+
+        if (!child) return null;
+
+        return this.mapToDomain(child);
+    }
+
+    async updateChild(parentId: string, childId: string, data: Partial<Child>): Promise<Child | null> {
+        const updatedChild = await ChildModel.findOneAndUpdate(
+            { _id: childId, parentId },
+            data,
+            { new: true }
+        );
+
+        if (!updatedChild) return null;
+
+        return this.mapToDomain(updatedChild);
+    }
+
+    async toggleDeleteChild( parentId: string, childId: string): Promise<Child | null > {
+        const child = await ChildModel.findOne( { _id:childId, parentId });
+
         if(!child) return null;
+        child.isDeleted = !child.isDeleted;
+        await child.save();
+
         return this.mapToDomain( child );
     }
+        
 
-    async updateChild(childId: string, data: Partial<Child>): Promise<Child | null> {
-        const updatedChild = await ChildModel.findByIdAndUpdate( childId, data, { new: true });
-        if(!updatedChild) return null;
-        return this.mapToDomain( updatedChild );
-    }
+    async toggleBlockChild( parentId: string, childId: string): Promise<Child | null> {
+         const child = await ChildModel.findOne( { _id:childId, parentId });
 
-    async deleteChild(childId: string): Promise<void> {
-         await ChildModel.findByIdAndDelete( childId );
-    }
+        if(!child) return null;
+        child.isBlocked = !child.isBlocked;
+        await child.save();
 
-    async blockChild(childId: string): Promise<void> {
-         await ChildModel.findByIdAndUpdate(childId, {$set : { isBlocked: true }});
+        return this.mapToDomain( child );
     }
 
     //Mapping inorder to avoid errors when converting objectId to string
@@ -41,9 +66,11 @@ export class MongoChildRepository implements IChildRepository {
             parentId: doc.parentId.toString(),
             name: doc.name,
             age: doc.age,
+            dob: doc.dob,
             avatar: doc.avatar,
             createdAt: doc.createdAt,
             isBlocked: doc.isBlocked,
+            isDeleted: doc.isDeleted,
 
             totalPlayTime:doc.totalPlayTime,
             totalGamesPlayed: doc.totalGamesPlayed,
