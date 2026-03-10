@@ -1,21 +1,57 @@
 import { Router } from "express";
-import { parentAuthController } from "../../infrastructure/container/ParentContainer";
-import { authMiddleware } from "../../infrastructure/container/ParentContainer";
+
+import {
+  registerParentController,
+  verifyOTPController,
+  loginParentController,
+  refreshTokenController,
+  forgotPasswordController,
+  resetPasswordController
+  
+} from "../../infrastructure/container/ParentContainer";
+
+
+import { registerValidator } from "../../application/validators/Auth/RegisterValidator";
+import { loginValidator } from "../../application/validators/Auth/LoginValidator";
+import { validateRequest } from "../middlewares/validateRequest";
+import { otpValidator } from "../../application/validators/Auth/OtpValidator";
 
 const router = Router();
 
-//Parent Registration
-router.post("/signup", (req,res) => {
-    parentAuthController.register(req, res)
-});
+router.post(
+  "/signup",
+  registerValidator,
+  validateRequest,
+  registerParentController.register.bind(registerParentController)
+);
 
-//Parent Login
-router.post("/login", ( req, res ) => {
-    parentAuthController.login(req, res)
-});
+router.post(
+  "/verify-otp",
+  otpValidator,
+  validateRequest,
+  verifyOTPController.verify.bind(verifyOTPController)
+);
 
-router.post("/refresh", (req,res) => {
-    parentAuthController.refresh(req, res);
-});
+router.post(
+  "/login",
+  loginValidator,
+  validateRequest,
+  loginParentController.login.bind(loginParentController)
+);
+
+router.post(
+  "/refresh",
+  refreshTokenController.refresh.bind(refreshTokenController)
+);
+
+router.post(
+  "/forgot-password",
+  forgotPasswordController.sendOTP.bind(forgotPasswordController)
+);
+
+router.post(
+  "/reset-password",
+  resetPasswordController.reset.bind(resetPasswordController)
+);
 
 export default router;

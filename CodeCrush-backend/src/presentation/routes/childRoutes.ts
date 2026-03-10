@@ -9,27 +9,56 @@ import { toggleDeleteChild } from "../controllers/Child/ToggleDeleteChildControl
 
 import { authMiddleware } from "../../infrastructure/container/ParentContainer";
 
+import { addChildValidator } from "../../application/validators/Child/AddChildValidator";
+import { updateChildValidator } from "../../application/validators/Child/UpdateChildValidator";
+import { childIdValidator } from "../../application/validators/Child/ChildIdValidator";
+
+import { validate } from "../middlewares/validate";
+
 const router = Router();
 
 // Apply auth middleware to all routes
 router.use(authMiddleware);
 
 // Add new child
-router.post("/", addChild);
+router.post(
+  "/",
+  validate(addChildValidator),
+  addChild
+);
 
 // Get all children of parent
-router.get("/", getChildren);
+router.get(
+  "/",
+  getChildren
+);
 
 // Get child by id
-router.get("/:id", getChildById);
+router.get(
+  "/:id",
+  validate(childIdValidator),
+  getChildById
+);
 
 // Update child details
-router.put("/:id", updateChild);
+router.put(
+  "/:id",
+  validate([...childIdValidator, ...updateChildValidator]),
+  updateChild
+);
 
 // Delete / Restore child
-router.patch("/:id/toggle-delete", toggleDeleteChild);
+router.patch(
+  "/:id/toggle-delete",
+  validate(childIdValidator),
+  toggleDeleteChild
+);
 
 // Block / Unblock child
-router.patch("/:id/toggle-block", toggleBlockChild);
+router.patch(
+  "/:id/toggle-block",
+  validate(childIdValidator),
+  toggleBlockChild
+);
 
 export default router;

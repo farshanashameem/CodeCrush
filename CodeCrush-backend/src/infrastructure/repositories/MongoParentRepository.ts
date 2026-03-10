@@ -31,6 +31,13 @@ export class MongoParentRepository implements IParentRepository {
         });
     }
 
+    async updatePassword(email: string, password: string): Promise<void> {
+        await ParentModel.updateOne(
+            { email },
+            { $set: { password }}
+        );
+    }
+
     private mapToDomain(doc:any): Parent {
         return {
             id:doc._id.toString(),

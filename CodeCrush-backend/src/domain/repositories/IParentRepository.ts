@@ -1,3 +1,4 @@
+
 import { Parent } from "../entities/Parent";
 
 export interface IParentRepository {
@@ -6,4 +7,5 @@ export interface IParentRepository {
     findById(id: string) : Promise<Parent | null>;
     update(id: string, data:Partial<Parent>) : Promise<Parent | null>;
     updateRefreshToken( parentId: string, token: string): Promise<void>;
+    updatePassword(email: string, password: string): Promise<void>;
 }

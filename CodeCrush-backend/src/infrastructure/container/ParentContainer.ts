@@ -1,38 +1,91 @@
 import { MongoParentRepository } from "../repositories/MongoParentRepository";
 import { BcryptHashService } from "../services/BcryptHashService";
-import { RegisterParentUseCase } from "../../application/use-cases/parent/RegisterParentUseCase";
-import { ParentAuthController } from "../../presentation/controllers/Parent/ParentAuthController";
-import { LoginParentUseCase } from "../../application/use-cases/parent/LoginParentUseCase";
 import { JWTTokenService } from "../services/JWTTokenService";
-import { parentAuthMiddleware } from "../../presentation/middlewares/authMiddleware";
-import { RefershTokenUseCase } from "../../application/use-cases/parent/RefreshTokenUseCase";
+import { OTPService } from "../services/OTPService";
+import { EmailService } from "../services/EmailService";
 
-//create Repository instance
+import { RegisterParentUseCase } from "../../application/use-cases/parent/RegisterParentUseCase";
+import { LoginParentUseCase } from "../../application/use-cases/parent/LoginParentUseCase";
+import { RefershTokenUseCase } from "../../application/use-cases/parent/RefreshTokenUseCase";
+import { ForgotPasswordUseCase } from "../../application/use-cases/parent/ForgotPasswordUseCase";
+import { ResetPasswordUseCase } from "../../application/use-cases/parent/ResetPasswordUseCase";
+
+import { RegisterParentController } from "../../presentation/controllers/Parent/RegisterParentController";
+import { VerifyOTPController } from "../../presentation/controllers/Parent/VerifyOTPController";
+import { LoginParentController } from "../../presentation/controllers/Parent/LoginParentController";
+import { RefreshTokenController } from "../../presentation/controllers/Parent/RefreshTokencontroller";
+import { parentAuthMiddleware } from "../../presentation/middlewares/authMiddleware";
+import { ForgotPasswordController } from "../../presentation/controllers/Parent/ForgotPasswordController";
+import { ResetPasswordController } from "../../presentation/controllers/Parent/ResetPasswordController";
+
+
+
+// Repository
 const parentRepository = new MongoParentRepository();
 
-//Create hash Service instance
+
+// Services
 const hashService = new BcryptHashService();
-
-//Create Token Service Instance
 const tokenService = new JWTTokenService();
+const otpService = new OTPService();
+const emailService = new EmailService();
 
-//Create Register use case instance
+
+// UseCases
 const registerParentUseCase = new RegisterParentUseCase(
-    parentRepository, hashService
+    parentRepository,
+    hashService
 );
 
-//Create Login use case instance
 const loginParentUseCase = new LoginParentUseCase(
-    parentRepository, hashService, tokenService
+    parentRepository,
+    hashService,
+    tokenService
 );
 
-//Create refreshToken instance
-const refreshTokenUseCase = new RefershTokenUseCase(tokenService);
-
-//Create controller instance
-export const parentAuthController = new ParentAuthController(
-    registerParentUseCase,loginParentUseCase, refreshTokenUseCase
+const refreshTokenUseCase = new RefershTokenUseCase(
+    tokenService
 );
 
-export const authMiddleware = parentAuthMiddleware( tokenService );
+const forgotPasswordUseCase = new ForgotPasswordUseCase(
+    parentRepository, otpService
+);
 
+const resetPasswordUseCase = new ResetPasswordUseCase(
+    parentRepository,
+    hashService
+);
+
+
+// Controllers
+export const registerParentController = new RegisterParentController(
+    otpService,
+    emailService
+);
+
+export const verifyOTPController = new VerifyOTPController(
+    registerParentUseCase
+);
+
+export const loginParentController = new LoginParentController(
+    loginParentUseCase
+);
+
+export const refreshTokenController = new RefreshTokenController(
+    refreshTokenUseCase
+);
+
+
+export const forgotPasswordController = new ForgotPasswordController(
+    forgotPasswordUseCase,
+    otpService,
+    emailService
+);
+
+
+export const resetPasswordController = new ResetPasswordController(
+    resetPasswordUseCase
+);
+
+// Middleware
+export const authMiddleware = parentAuthMiddleware(tokenService);
