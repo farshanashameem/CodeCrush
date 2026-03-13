@@ -1,0 +1,107 @@
+@keyframes shake {
+  0% { transform: translateX(0); }
+
+  25% { transform: translateX(-6px); }
+
+  50% { transform: translateX(6px); }
+
+  75% { transform: translateX(-6px); }
+
+  100% { transform: translateX(0); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease;
+}
+
+/* Floating Puzzle Animation */
+
+@keyframes floatPuzzle {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translateY(-30px) rotate(15deg);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.4;
+  }
+}
+
+.puzzle {
+  position: absolute;
+  font-size: 40px;
+  animation: floatPuzzle 6s ease-in-out infinite;
+}
+
+.puzzle:nth-child(1) {
+  left: 10%;
+  top: 20%;
+  animation-delay: 0s;
+}
+
+.puzzle:nth-child(2) {
+  left: 80%;
+  top: 25%;
+  animation-delay: 1s;
+}
+
+.puzzle:nth-child(3) {
+  left: 15%;
+  bottom: 20%;
+  animation-delay: 2s;
+}
+
+.puzzle:nth-child(4) {
+  right: 10%;
+  bottom: 25%;
+  animation-delay: 3s;
+}
+
+.puzzle:nth-child(5) {
+  left: 50%;
+  top: 10%;
+  animation-delay: 4s;
+}
+
+/* Robot Floating Animation */
+
+@keyframes robotFloat {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.robot-float {
+  animation: robotFloat 4s ease-in-out infinite;
+}
+
+
+/* Robot blink effect */
+
+@keyframes robotBlink {
+  0%, 92%, 100% {
+    opacity: 1;
+  }
+
+  95% {
+    opacity: 0.3;
+  }
+}
+
+.robot-blink {
+  animation: robotBlink 5s infinite;
+}
