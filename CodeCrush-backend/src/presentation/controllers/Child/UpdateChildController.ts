@@ -16,7 +16,7 @@ export const updateChild = async (req: AuthRequest, res: Response) => {
 
         return res.status(200).json({
             message: "Updated Successfully",
-            child: updatedChild
+            data: updatedChild
         });
 
     } catch (error: any) {

@@ -3,41 +3,91 @@ import BG from "../../../../assets/authBG.png";
 import logo from "../../../../assets/parentPortal.png";
 import icon from "../../../../assets/parentIcon.png";
 import { useNavigate } from "react-router-dom";
+import { loginUser, signupParent } from "../../api/AuthActions";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../../app/store";
+import toast from "react-hot-toast";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [animate, setAnimate] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // ✅ Loading state
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     setAnimate(true);
   }, []);
 
- const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true); // ✅ Start loading
 
-  if (isLogin) {
-    navigate("/parent/dashboard");
-  } else {
-    navigate("/parent/verify-otp");
-  }
-};
+    try {
+      if (isLogin) {
+        if (!email.trim() || !password.trim()) {
+          toast.error("Please enter email and password");
+          return;
+        }
+
+        const result = await dispatch(loginUser(email, password));
+
+        if (result.success && result.user && result.accessToken) {
+          toast.success("Login successful 🎉");
+          navigate("/parent/dashboard");
+        } else {
+          toast.error(result.message);
+        }
+      } else {
+        if (!name.trim() || !email.trim() || !password || !confirmPassword) {
+          toast.error("Please fill all fields");
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          toast.error("Passwords do not match");
+          return;
+        }
+
+        const result = await dispatch(
+          signupParent(name, email, password, confirmPassword)
+        );
+
+        if (result.success) {
+          if (result.expiresAt) {
+            localStorage.setItem("otpExpiry", result.expiresAt.toString());
+          }
+
+          localStorage.setItem("parentEmail", email);
+          toast.success("OTP sent to your email");
+          navigate("/parent/verify-otp", { state: { email } });
+        } else {
+          console.log(result);
+          toast.error(result.message);
+        }
+      }
+    } finally {
+      setLoading(false); // ✅ Stop loading
+    }
+  };
 
   const toggleAuth = () => setIsLogin(!isLogin);
 
   return (
     <div className="relative h-screen w-full flex flex-col items-center justify-center px-4 font-sans overflow-hidden">
-
-      {/* Background */}
       <img
         src={BG}
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Circuit Overlay */}
       <div
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
@@ -50,15 +100,10 @@ const AuthPage = () => {
         }}
       />
 
-      {/* Content */}
       <div className="relative z-20 flex flex-col items-center w-full max-w-md">
-
-        {/* Logo */}
         <div
           className={`mb-3 transition-all duration-700 ${
-            animate
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-10 opacity-0"
+            animate ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"
           }`}
         >
           <img
@@ -68,16 +113,11 @@ const AuthPage = () => {
           />
         </div>
 
-        {/* Card */}
         <div
           className={`w-full bg-white/70 backdrop-blur-xl border border-white/40 rounded-[32px] shadow-2xl px-6 py-6 sm:px-8 sm:py-8 flex flex-col items-center transition-all duration-700 ${
-            animate
-              ? "translate-y-0 opacity-100"
-              : "translate-y-10 opacity-0"
+            animate ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           }`}
         >
-
-          {/* Icon */}
           <div className="w-20 h-20 mb-3 flex items-center justify-center">
             <img
               src={icon}
@@ -86,18 +126,11 @@ const AuthPage = () => {
             />
           </div>
 
-          {/* Title */}
           <h2 className="font-mochiy text-[#1a3a6d] text-lg sm:text-xl font-bold uppercase text-center mb-4">
             {isLogin ? "Welcome Back Parent" : "Create Your Account"}
           </h2>
 
-          {/* Form */}
-          <form
-            className="w-full space-y-3"
-            onSubmit={handleSubmit}
-          >
-
-            {/* Parent Name */}
+          <form className="w-full space-y-3" onSubmit={handleSubmit}>
             <div
               className={`transition-all duration-300 origin-top ${
                 !isLogin
@@ -108,25 +141,28 @@ const AuthPage = () => {
               <input
                 type="text"
                 placeholder="Parent name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full font-mochiy bg-[#e1f5fe] rounded-full py-3 px-6 text-gray-700 focus:ring-2 focus:ring-blue-400 outline-none"
               />
             </div>
 
-            {/* Email */}
             <input
               type="email"
               placeholder="Parent email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full font-mochiy bg-[#e1f5fe] rounded-full py-3 px-6 text-gray-700 focus:ring-2 focus:ring-blue-400 outline-none"
             />
 
-            {/* Password */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full font-mochiy bg-[#e1f5fe] rounded-full py-3 px-6 text-gray-700 focus:ring-2 focus:ring-blue-400 outline-none"
               />
-
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -136,7 +172,6 @@ const AuthPage = () => {
               </button>
             </div>
 
-            {/* Confirm Password */}
             <div
               className={`transition-all duration-300 origin-top ${
                 !isLogin
@@ -147,11 +182,12 @@ const AuthPage = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full font-mochiy bg-[#e1f5fe] rounded-full py-3 px-6 text-gray-700 focus:ring-2 focus:ring-blue-400 outline-none"
               />
             </div>
 
-            {/* Forgot Password */}
             {isLogin && (
               <div className="text-center">
                 <button
@@ -163,15 +199,44 @@ const AuthPage = () => {
               </div>
             )}
 
-            {/* Submit */}
-            <button 
-            type="submit"
-            className="w-full bg-[#006837] hover:bg-[#004d29] text-white font-mochiy py-3 rounded-full text-base shadow-xl active:scale-95 transition">
-              {isLogin ? "Login Securely" : "Sign Up Securely"}
+            {/* ✅ Submit Button with spinner */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full bg-[#006837] hover:bg-[#004d29] text-white font-mochiy py-3 rounded-full text-base shadow-xl active:scale-95 transition flex items-center justify-center gap-2 ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading && (
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+              )}
+              {loading
+                ? "Please wait..."
+                : isLogin
+                ? "Login Securely"
+                : "Sign Up Securely"}
             </button>
           </form>
 
-          {/* Toggle */}
           <div className="mt-4 text-center">
             <p className="text-xs sm:text-sm font-mochiy text-gray-900">
               {isLogin

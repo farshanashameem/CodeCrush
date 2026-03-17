@@ -14,7 +14,7 @@ const AppRoutes = () => {
                 <Route path="/home" element = { <HomePage/> } />
                 <Route path="/parent/*" element = { <ParentRoutes/> } />
                 <Route path="/child/*" element = { <ChildRoutes/> } />
-                <Route path="/admin/" element = { <AdminRoutes/> } />
+                <Route path="/admin/*" element = { <AdminRoutes/> } />
             </Routes>
         </BrowserRouter>
     )

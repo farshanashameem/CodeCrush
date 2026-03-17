@@ -1,7 +1,21 @@
 export const AVATARS = [
-  "avatar1.png",
-  "avatar2.png",
-  "avatar3.png",
-  "avatar4.png",
-  "avatar5.png"
+  "av1.jpg",
+  "av2.jpg",
+  "av3.jpg",
+  "av4.jpg",
+  "av5.jpg",
+  "av6.png",
+  "av7.jpg",
+  "av8.jpg",
+  "av9.png",
+  "av10.jpg",
+  "av11.png",
+  "av12.png",
+  "av13.png",
+  "av14.png",
+  "av15.jpg",
+  "av16.png",
+  "av17.png",
+  "av18.png",
+  "av19.png"
 ];

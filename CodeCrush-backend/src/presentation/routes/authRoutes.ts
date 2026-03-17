@@ -1,12 +1,14 @@
 import { Router } from "express";
-
+import { authMiddleware } from "../../infrastructure/container/ParentContainer";
 import {
   registerParentController,
   verifyOTPController,
   loginParentController,
   refreshTokenController,
   forgotPasswordController,
-  resetPasswordController
+  resetPasswordController,
+  resendOTpController,
+  logoutController
   
 } from "../../infrastructure/container/ParentContainer";
 
@@ -24,6 +26,7 @@ router.post(
   validateRequest,
   registerParentController.register.bind(registerParentController)
 );
+router.post("/resend-otp", (req, res) => resendOTpController.resendOTP(req, res));
 
 router.post(
   "/verify-otp",
@@ -54,4 +57,9 @@ router.post(
   resetPasswordController.reset.bind(resetPasswordController)
 );
 
+router.post(
+  "/logout",
+  authMiddleware,
+  logoutController.logout.bind(logoutController)
+);
 export default router;

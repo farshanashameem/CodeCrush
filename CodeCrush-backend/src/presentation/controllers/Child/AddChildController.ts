@@ -11,6 +11,7 @@ export const addChild = async (req: AuthRequest, res: Response ) => {
         if(!parentId) {
             return res.status(401).json({ message: "Unauthorized"});
         }
+        
 
         const child = await addChildUseCase.execute({...req.body, parentId});
 

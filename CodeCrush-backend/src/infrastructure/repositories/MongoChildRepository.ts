@@ -1,24 +1,30 @@
 import { IChildRepository } from "../../domain/repositories/IChildRepository";
 import { Child } from "../../domain/entities/Child";
 import { ChildModel } from "../database/models/ChildModel";
-
+import { ParentModel } from "../database/models/ParentModel";
 export class MongoChildRepository implements IChildRepository {
 
     async createChild(child: Child): Promise<Child> {
         const newChild = await ChildModel.create( child );
+        //  Push the child ID to the parent
+    await ParentModel.findByIdAndUpdate(
+        child.parentId,                // parent ID from child
+        { $addToSet: { childrenIds: newChild._id } }, // add without duplicates
+        { new: true }
+    );
         return this.mapToDomain(newChild);
     }
 
     async getChildrenByParentId(parentId: string): Promise<Child[]> {
-        const children = await ChildModel.find( { parentId, isDeleted: false });
+        const children = await ChildModel.find( { parentId });
         return children.map( child => this.mapToDomain( child ));
     }
 
     async getChildById(parentId: string, childId: string): Promise<Child | null> {
         const child = await ChildModel.findOne({
             _id: childId,
-            parentId,
-            isDeleted: false
+            parentId
+           
         });
 
         if (!child) return null;
@@ -38,26 +44,29 @@ export class MongoChildRepository implements IChildRepository {
         return this.mapToDomain(updatedChild);
     }
 
-    async toggleDeleteChild( parentId: string, childId: string): Promise<Child | null > {
-        const child = await ChildModel.findOne( { _id:childId, parentId });
+// Toggle Delete
+async toggleDeleteChild(parentId: string, childId: string): Promise<Child> {
+    const child = await ChildModel.findOne({ _id: childId, parentId });
 
-        if(!child) return null;
-        child.isDeleted = !child.isDeleted;
-        await child.save();
+    if (!child) throw new Error("Child not found");
 
-        return this.mapToDomain( child );
-    }
-        
+    child.isDeleted = !child.isDeleted;
+    await child.save();
 
-    async toggleBlockChild( parentId: string, childId: string): Promise<Child | null> {
-         const child = await ChildModel.findOne( { _id:childId, parentId });
+    return this.mapToDomain(child);
+}
 
-        if(!child) return null;
-        child.isBlocked = !child.isBlocked;
-        await child.save();
+// Toggle Block
+async toggleBlockChild(parentId: string, childId: string): Promise<Child> {
+    const child = await ChildModel.findOne({ _id: childId, parentId });
 
-        return this.mapToDomain( child );
-    }
+    if (!child) throw new Error("Child not found");
+
+    child.isBlocked = !child.isBlocked;
+    await child.save();
+
+    return this.mapToDomain(child);
+}
 
     //Mapping inorder to avoid errors when converting objectId to string
     private mapToDomain( doc: any ) : Child {

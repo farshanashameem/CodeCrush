@@ -9,15 +9,18 @@ import { LoginParentUseCase } from "../../application/use-cases/parent/LoginPare
 import { RefershTokenUseCase } from "../../application/use-cases/parent/RefreshTokenUseCase";
 import { ForgotPasswordUseCase } from "../../application/use-cases/parent/ForgotPasswordUseCase";
 import { ResetPasswordUseCase } from "../../application/use-cases/parent/ResetPasswordUseCase";
+import { ResendOTPUseCase } from "../../application/use-cases/parent/ResendOTPUseCase";
+import { LogoutUseCase } from "../../application/use-cases/parent/LogoutUseCase";
 
 import { RegisterParentController } from "../../presentation/controllers/Parent/RegisterParentController";
 import { VerifyOTPController } from "../../presentation/controllers/Parent/VerifyOTPController";
 import { LoginParentController } from "../../presentation/controllers/Parent/LoginParentController";
-import { RefreshTokenController } from "../../presentation/controllers/Parent/RefreshTokencontroller";
+import { RefreshTokenController } from "../../presentation/controllers/Parent/RefreshTokenController";
 import { parentAuthMiddleware } from "../../presentation/middlewares/authMiddleware";
 import { ForgotPasswordController } from "../../presentation/controllers/Parent/ForgotPasswordController";
 import { ResetPasswordController } from "../../presentation/controllers/Parent/ResetPasswordController";
-
+import { ResendOTPController } from "../../presentation/controllers/Parent/ResendOTPController";
+import { LogoutController } from "../../presentation/controllers/Parent/LogoutController";
 
 
 // Repository
@@ -56,6 +59,8 @@ const resetPasswordUseCase = new ResetPasswordUseCase(
     hashService
 );
 
+const resendOTPUseCase = new ResendOTPUseCase( emailService, otpService);
+const logoutUseCase = new LogoutUseCase(parentRepository);
 
 // Controllers
 export const registerParentController = new RegisterParentController(
@@ -87,5 +92,8 @@ export const resetPasswordController = new ResetPasswordController(
     resetPasswordUseCase
 );
 
+export const resendOTpController = new ResendOTPController( resendOTPUseCase );
+
+export const logoutController = new LogoutController( logoutUseCase)
 // Middleware
 export const authMiddleware = parentAuthMiddleware(tokenService);

@@ -1,10 +1,11 @@
-export class OTPService {
+import { IOTPService } from "../../application/interfaces/IOTPService";
 
-    generateOTP() : number {
-        return Math.floor( 1000 + Math.random() * 9000 );
-    }
+export class OTPService implements IOTPService {
+  generateOTP(): number {
+    return Math.floor(1000 + Math.random() * 9000);
+  }
 
-    getExpiryTime( seconds: number= 60) : number {
-        return Date.now() + 60000;
-    }
+  getExpiryTime(seconds: number = 60): number {
+    return Date.now() + seconds * 1000;
+  }
 }

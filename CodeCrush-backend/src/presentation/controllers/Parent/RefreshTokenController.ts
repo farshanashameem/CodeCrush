@@ -9,7 +9,7 @@ export class RefreshTokenController {
 
         try {
 
-            const { refreshToken } = req.body;
+            const refreshToken = req.cookies.refreshToken;
 
             if (!refreshToken) {
                 return res.status(400).json({

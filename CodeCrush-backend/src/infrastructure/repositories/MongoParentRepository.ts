@@ -25,7 +25,7 @@ export class MongoParentRepository implements IParentRepository {
         return updated? this.mapToDomain(updated) : null;
     }
 
-    async updateRefreshToken(parentId: string, token: string): Promise<void> {
+    async updateRefreshToken(parentId: string, token: string | null ): Promise<void> {
         await ParentModel.findByIdAndUpdate(parentId,{
             refreshToken: token
         });
@@ -38,6 +38,32 @@ export class MongoParentRepository implements IParentRepository {
         );
     }
 
+    async getAllParents(): Promise<Parent[]> {
+        const parents = await ParentModel.find().exec();
+        return parents.map( parent => this.mapToDomain(parent));
+    }
+
+    async toggleBlockParent(parentId: string): Promise<Parent | null> {
+        
+        const parent= await ParentModel.findById( parentId);
+        if( ! parent ) return null;
+        parent.isBlocked= !parent.isBlocked;
+        await parent.save();
+
+        return this.mapToDomain(parent);
+    }
+
+    async toggleDeleteParent(parentId: string): Promise<Parent | null> {
+        const parent = await ParentModel.findById( parentId );
+
+        if( !parent ) return null;
+         parent.isDeleted = !parent.isDeleted;
+
+         await parent.save();
+
+         return this.mapToDomain(parent);
+    }
+
     private mapToDomain(doc:any): Parent {
         return {
             id:doc._id.toString(),
@@ -45,6 +71,7 @@ export class MongoParentRepository implements IParentRepository {
             email: doc.email,
             password: doc.password,
             isBlocked: doc.isBlocked,
+            isDeleted: doc.isDeleted,
             childrenIds: doc.childrenIds?.map( (id:any) => id.toString()),
             createdAt: doc.createdAt
         };

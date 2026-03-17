@@ -25,7 +25,7 @@ export class ParentAuthController {
             const expiresAt = this.otpService.getExpiryTime();
 
             req.session.otpData = {
-                name,email,password, otp, expiresAt, attempts:0,resendCount:0
+                name,email,password, otp, expiresAt, attempts:0,resendCount:0, type: "register"
             }
 
             await this.emailService.sendOTP(email, otp);
@@ -64,6 +64,10 @@ export class ParentAuthController {
             if (parseInt(otp) !== sessionData.otp) {
                 sessionData.attempts += 1;
                 return res.status(400).json({ message: "Invalid OTP" });
+            }
+
+            if (!sessionData.name || !sessionData.password) {
+            return res.status(400).json({ message: "Invalid session data" });
             }
 
             const parent = await this.registerParentUseCase.execute(

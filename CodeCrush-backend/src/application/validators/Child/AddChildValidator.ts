@@ -17,13 +17,6 @@ export const addChildValidator = [
     .isInt({ min: 3, max: 12 })
     .withMessage("Age must be a number between 3 and 12"),
 
-  body("gender")
-    .notEmpty()
-    .toLowerCase()
-    .withMessage("Gender is required")
-    .isIn(["male", "female"])
-    .withMessage("Gender must be male or female"),
-
     body("avatar")
     .notEmpty()
     .withMessage("Avatar is required")

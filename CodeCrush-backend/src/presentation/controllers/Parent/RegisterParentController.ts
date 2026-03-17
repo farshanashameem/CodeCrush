@@ -1,41 +1,42 @@
+// infrastructure/controllers/RegisterParentController.ts
 import { Request, Response } from "express";
 import { OTPService } from "../../../infrastructure/services/OTPService";
 import { EmailService } from "../../../infrastructure/services/EmailService";
 
 export class RegisterParentController {
+  constructor(
+    private otpService: OTPService,
+    private emailService: EmailService
+  ) {}
 
-    constructor(
-        private otpService: OTPService,
-        private emailService: EmailService
-    ) {}
+  async register(req: Request, res: Response) {
+    try {
+      const { name, email, password } = req.body;
 
-    async register(req: Request, res: Response) {
-        try {
+      const otp = this.otpService.generateOTP();
+      const expiresAt = this.otpService.getExpiryTime();
 
-            const { name, email, password } = req.body;
+      // Store all info in otpData
+      req.session.otpData = {
+        name,
+        email,
+        password,
+        otp,
+        expiresAt,
+        attempts: 0,
+        resendCount: 0,
+        type: "register"
+      };
 
-            const otp = this.otpService.generateOTP();
-            const expiresAt = this.otpService.getExpiryTime();
+      await this.emailService.sendOTP(email, otp);
 
-            req.session.otpData = {
-                name,
-                email,
-                password,
-                otp,
-                expiresAt,
-                attempts: 0,
-                resendCount: 0,
-                type: "register"
-            };
+      res.status(200).json({
+        message: "OTP sent to email",
+        expiresAt,
+      });
 
-            await this.emailService.sendOTP(email, otp);
-
-            res.status(200).json({
-                message: "OTP sent to email"
-            });
-
-        } catch (error:any) {
-            res.status(400).json({ message: error.message });
-        }
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
     }
+  }
 }

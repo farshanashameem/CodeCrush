@@ -17,7 +17,8 @@ export const toggleDeleteChild = async (req: AuthRequest, res: Response) => {
         }
 
         const child = await toggleDeleteChildUseCase.execute(parentId, childId);
-
+        if (!child) return res.status(404).json({ message: "Child not found" });
+        
         return res.status(200).json({
             message: child?.isDeleted ? "Child deleted" : "Child restored",
             child

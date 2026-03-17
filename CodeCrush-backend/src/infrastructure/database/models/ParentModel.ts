@@ -18,6 +18,10 @@ const ParentSchema = new mongoose.Schema({
         type: Boolean,
         default:false
     },
+    isDeleted: {
+        type: Boolean,
+        default:false
+    },
     childrenIds: [{
         type:mongoose.Schema.Types.ObjectId,
         ref: "Children"

@@ -9,12 +9,12 @@ export const getChildren = async ( req:AuthRequest, res:Response ) => {
         const parentId = req.parent?.id;
 
         if( !parentId ) {
-            res.status(401).json({ message: "Unauthorized"});
+           return res.status(401).json({ message: "Unauthorized"});
         }
 
         const children = await getChildrenUseCase.execute( parentId! );
-        res.status(200).json(children);
+         return res.status(200).json(children);
     } catch ( error:any ) {
-        res.status(400).json({ message: error.message});
+       return res.status(400).json({ message: error.message});
     }
 }

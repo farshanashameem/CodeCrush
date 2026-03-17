@@ -7,6 +7,11 @@ export interface AuthRequest extends Request {
         id: string;
         email: string;
     }
+
+    admin?: {
+        id: string;
+        email: string;
+    };
 }
 
 export const parentAuthMiddleware =(tokenService: ITokenservice) => {
